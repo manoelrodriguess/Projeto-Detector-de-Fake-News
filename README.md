@@ -1,1 +1,0 @@
-# Projeto-Detector-de-Fake-News
