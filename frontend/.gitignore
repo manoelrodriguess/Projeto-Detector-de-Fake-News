@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ambientes virtuais
+venv/
+.env/
+.venv/
+
+# arquivos Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
