@@ -89,7 +89,7 @@ echo -e "   ${GREEN}→ Documentação: http://localhost:8000/docs${NC}"
 echo ""
 cd backend
 source venv/bin/activate
-python main.py &
+uvicorn main:app --reload &
 BACKEND_PID=$!
 cd ..
 

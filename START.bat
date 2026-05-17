@@ -67,7 +67,7 @@ echo 🔌 Iniciando Backend (FastAPI)...
 echo   → Acessar: http://localhost:8000
 echo   → Documentação: http://localhost:8000/docs
 echo.
-start "Backend - Detector de Fake News" cmd /k "cd backend && python -m venv venv && venv\Scripts\activate.bat && python main.py"
+start "Backend - Detector de Fake News" cmd /k "cd backend && python -m venv venv && venv\Scripts\activate.bat && uvicorn main:app --reload"
 
 echo.
 echo ╔════════════════════════════════════════════════════════════════════════════╗
