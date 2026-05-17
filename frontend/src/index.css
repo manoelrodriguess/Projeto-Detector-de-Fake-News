@@ -1,1 +1,355 @@
 @import "tailwindcss";
+
+/* ============================================================
+   CONFIGURAÇÕES GLOBAIS E ANIMAÇÕES CUSTOMIZADAS
+   ============================================================ */
+
+/* Variáveis CSS para cores do tema */
+:root {
+  --color-bg-dark: #0f172a;
+  --color-card-dark: #1e293b;
+  --color-accent-blue: #3b82f6;
+  --color-success-green: #22c55e;
+  --color-error-red: #ef4444;
+}
+
+/* Estilos globais */
+* {
+  @apply antialiased;
+}
+
+body {
+  @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================================
+   ANIMAÇÕES CUSTOMIZADAS
+   ============================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-10deg) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes blurIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Classes de animação utilizadas nos componentes */
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slideInUp {
+  animation: slideInUp 0.6s ease-out forwards;
+}
+
+.animate-slideInDown {
+  animation: slideInDown 0.6s ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 1000px 100%;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-rotateIn {
+  animation: rotateIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-blurIn {
+  animation: blurIn 0.6s ease-out forwards;
+}
+
+/* ============================================================
+   EFEITOS DE GLASSMORPHISM
+   ============================================================ */
+
+.glassmorphism {
+  @apply bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl;
+}
+
+.glassmorphism-sm {
+  @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg shadow-lg;
+}
+
+.glassmorphism-hover {
+  @apply transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:shadow-2xl;
+}
+
+/* Efeito de borda brilhante para elementos especiais */
+.glow-border {
+  @apply border border-transparent bg-gradient-to-r from-blue-500 to-cyan-500 bg-origin-border;
+}
+
+/* ============================================================
+   UTILITÁRIOS CUSTOMIZADOS PARA TAILWIND
+   ============================================================ */
+
+/* Scrollbar customizada para navegadores webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded hover:bg-slate-600;
+}
+
+/* Seleção de texto */
+::selection {
+  @apply bg-blue-500 text-white;
+}
+
+/* Focus visível para acessibilidade */
+:focus-visible {
+  @apply outline-none ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-950;
+}
+
+/* ============================================================
+   COMPONENTES REUTILIZÁVEIS
+   ============================================================ */
+
+@layer components {
+  .card-glass {
+    @apply bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-2xl border border-slate-700/50 rounded-2xl shadow-2xl p-6;
+  }
+
+  .card-glass-sm {
+    @apply bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-xl p-6 shadow-lg;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/50;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-white font-semibold rounded-lg transition-all duration-200 border border-slate-600 hover:border-slate-500;
+  }
+
+  .input-dark {
+    @apply bg-slate-900 text-white border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500 transition-all duration-200;
+  }
+
+  .badge-success {
+    @apply px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-green-400 text-sm font-semibold;
+  }
+
+  .badge-error {
+    @apply px-3 py-1 bg-red-500/20 border border-red-500/50 rounded-full text-red-400 text-sm font-semibold;
+  }
+
+  .badge-warning {
+    @apply px-3 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded-full text-yellow-400 text-sm font-semibold;
+  }
+
+  .metric-bar {
+    @apply h-3 rounded-full bg-slate-700/30 backdrop-blur-sm border border-white/10 overflow-hidden shadow-lg;
+  }
+}
+
+/* ============================================================
+   EFEITOS DE TEXTO
+   ============================================================ */
+
+.gradient-text {
+  @apply bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent;
+}
+
+.text-glow {
+  @apply text-white drop-shadow-lg;
+}
+
+/* ============================================================
+   RESPONSIVIDADE E MOBILE FIRST
+   ============================================================ */
+
+/* Camada de otimizações mobile */
+@media (max-width: 640px) {
+  body {
+    @apply text-sm;
+  }
+
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  .card-glass {
+    @apply p-4;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2;
+  }
+}
+
+/* Media queries para tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .card-glass {
+    @apply hover:border-slate-600 transition-colors duration-200;
+  }
+}
+
+/* Media queries para desktop */
+@media (min-width: 1025px) {
+  .card-glass {
+    @apply hover:border-slate-600 hover:shadow-2xl transition-all duration-300;
+  }
+
+  .card-glass:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ============================================================
+   ANIMAÇÕES PARA ELEMENTOS ESPECÍFICOS
+   ============================================================ */
+
+/* Animação de entrada para cards */
+.card-glass {
+  animation: blurIn 0.6s ease-out;
+}
+
+/* Animação de pulsação para elementos ativos */
+.status-indicator {
+  @apply relative flex h-2 w-2;
+}
+
+.status-indicator::before {
+  content: '';
+  @apply absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping;
+}
+
+.status-indicator::after {
+  content: '';
+  @apply relative inline-flex rounded-full h-2 w-2 bg-green-500;
+}
+
+/* ============================================================
+   MODO ESCURO APRIMORADO
+   ============================================================ */
+
+/* Gradientes de fundo para elementos especiais */
+.gradient-bg-blue {
+  @apply bg-gradient-to-br from-blue-500/20 to-blue-600/20;
+}
+
+.gradient-bg-purple {
+  @apply bg-gradient-to-br from-purple-500/20 to-purple-600/20;
+}
+
+.gradient-bg-cyan {
+  @apply bg-gradient-to-br from-cyan-500/20 to-cyan-600/20;
+}
