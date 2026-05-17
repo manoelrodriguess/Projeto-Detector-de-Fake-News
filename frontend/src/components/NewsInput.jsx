@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 
+// Mínimo de caracteres requerido para análise
+const MIN_TEXT_LENGTH = 50;
+
 // Componente de entrada de notícia com validação
 export default function NewsInput({ onAnalyze, isLoading }) {
   const [text, setText] = useState('');
   const [error, setError] = useState('');
 
   const trimmedText = text.trim();
-  const isAnalyzeDisabled = trimmedText.length < 50;
+  const isAnalyzeDisabled = trimmedText.length < MIN_TEXT_LENGTH;
 
   const handleAnalyze = () => {
-    // Validação: verificar se o texto tem pelo menos 50 caracteres
-    if (trimmedText.length < 50) {
-      setError('O texto deve ter pelo menos 50 caracteres');
+    // Validação: verificar se o texto tem pelo menos MIN_TEXT_LENGTH caracteres
+    if (trimmedText.length < MIN_TEXT_LENGTH) {
+      setError(`O texto deve ter pelo menos ${MIN_TEXT_LENGTH} caracteres`);
       return;
     }
 
