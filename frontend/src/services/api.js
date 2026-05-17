@@ -19,7 +19,6 @@ async function analyzeNews(text) {
     return data;
   } catch (error) {
     console.error('Erro ao chamar API:', error);
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     throw new Error(
       `Não foi possível conectar ao servidor. Verifique se o backend está rodando em ${apiUrl}`,
       { cause: error }

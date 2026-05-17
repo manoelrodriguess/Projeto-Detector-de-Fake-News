@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 
 // Componente de entrada de notícia com validação
@@ -6,10 +6,11 @@ export default function NewsInput({ onAnalyze, isLoading }) {
   const [text, setText] = useState('');
   const [error, setError] = useState('');
 
+  const trimmedText = useMemo(() => text.trim(), [text]);
+  const isAnalyzeDisabled = useMemo(() => trimmedText.length === 0, [trimmedText]);
+
   const handleAnalyze = () => {
     // Validação: verificar se o texto tem pelo menos 50 caracteres
-    const trimmedText = text.trim();
-    
     if (trimmedText.length === 0) {
       setError('Por favor, digite o texto da notícia');
       return;
@@ -21,16 +22,13 @@ export default function NewsInput({ onAnalyze, isLoading }) {
     }
 
     setError('');
-    onAnalyze(text);
+    onAnalyze(trimmedText);
   };
 
   const handleClear = () => {
     setText('');
     setError('');
   };
-
-  const trimmedText = text.trim();
-  const isAnalyzeDisabled = trimmedText.length === 0;
 
   return (
     <div className="bg-slate-800 rounded-xl border border-slate-700 p-8 shadow-lg">
