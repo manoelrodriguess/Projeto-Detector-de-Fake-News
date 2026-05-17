@@ -7,6 +7,7 @@ export default function NewsInput({ onAnalyze, isLoading }) {
   const [error, setError] = useState('');
 
   const trimmedText = useMemo(() => text.trim(), [text]);
+  const isAnalyzeDisabled = trimmedText.length < 50;
 
   const handleAnalyze = () => {
     // Validação: verificar se o texto tem pelo menos 50 caracteres
@@ -60,7 +61,7 @@ export default function NewsInput({ onAnalyze, isLoading }) {
         <div className="flex gap-3">
           <button
             onClick={handleAnalyze}
-            disabled={trimmedText.length === 0}
+            disabled={isAnalyzeDisabled}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             🔍 Analisar

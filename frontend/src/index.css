@@ -22,5 +22,5 @@ html {
 }
 
 body {
-  background-color: #0f172a;
+  background-color: theme('colors.slate.950');
 }
