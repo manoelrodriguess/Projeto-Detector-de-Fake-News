@@ -7,7 +7,6 @@ export default function NewsInput({ onAnalyze, isLoading }) {
   const [error, setError] = useState('');
 
   const trimmedText = useMemo(() => text.trim(), [text]);
-  const isAnalyzeDisabled = useMemo(() => trimmedText.length === 0, [trimmedText]);
 
   const handleAnalyze = () => {
     // Validação: verificar se o texto tem pelo menos 50 caracteres
@@ -51,7 +50,7 @@ export default function NewsInput({ onAnalyze, isLoading }) {
           <p className="text-red-400 text-sm mt-2">⚠️ {error}</p>
         )}
         <p className="text-slate-400 text-xs mt-2">
-          {text.length} caracteres
+          {trimmedText.length} caracteres
         </p>
       </div>
 
@@ -61,7 +60,7 @@ export default function NewsInput({ onAnalyze, isLoading }) {
         <div className="flex gap-3">
           <button
             onClick={handleAnalyze}
-            disabled={isAnalyzeDisabled}
+            disabled={trimmedText.length === 0}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             🔍 Analisar
