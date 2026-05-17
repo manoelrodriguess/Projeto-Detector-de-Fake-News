@@ -3,23 +3,28 @@ export default function ResultCard({ result, onAnalyzeAnother }) {
   if (!result) return null;
 
   const isTrue = result.resultado === 'Provavelmente Verdadeiro';
-  const statusColor = isTrue ? 'bg-green-900 border-green-700' : 'bg-red-900 border-red-700';
-  const statusTextColor = isTrue ? 'text-green-400' : 'text-red-400';
-  const statusIcon = isTrue ? '✓' : '⚠️';
-  const confidenceColor = isTrue ? 'bg-green-600' : 'bg-red-600';
+  
+  // Consolidate color configuration
+  const statusConfig = {
+    colors: isTrue 
+      ? { bg: 'bg-green-900', border: 'border-green-700', text: 'text-green-400', badge: 'bg-green-800' }
+      : { bg: 'bg-red-900', border: 'border-red-700', text: 'text-red-400', badge: 'bg-red-800' },
+    icon: isTrue ? '✓' : '⚠️',
+    confidenceColor: isTrue ? 'bg-green-600' : 'bg-red-600',
+  };
 
   const confiancaPercentual = Math.round(result.confianca * 100);
 
   return (
     <div className="animate-fadeIn">
-      <div className={`${statusColor} border rounded-xl p-8 shadow-lg`}>
+      <div className={`${statusConfig.colors.bg} ${statusConfig.colors.border} border rounded-xl p-8 shadow-lg`}>
         {/* Status Badge */}
         <div className="flex items-center gap-3 mb-6">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold ${statusTextColor} ${isTrue ? 'bg-green-800' : 'bg-red-800'}`}>
-            {statusIcon}
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold ${statusConfig.colors.text} ${statusConfig.colors.badge}`}>
+            {statusConfig.icon}
           </div>
           <div>
-            <h2 className={`text-2xl font-bold ${statusTextColor}`}>
+            <h2 className={`text-2xl font-bold ${statusConfig.colors.text}`}>
               {result.resultado}
             </h2>
             <p className="text-slate-300 text-sm">Resultado da análise</p>
@@ -34,7 +39,7 @@ export default function ResultCard({ result, onAnalyzeAnother }) {
           </div>
           <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
             <div
-              className={`h-full transition-all duration-300 ${confidenceColor}`}
+              className={`h-full transition-all duration-300 ${statusConfig.confidenceColor}`}
               style={{ width: `${confiancaPercentual}%` }}
             ></div>
           </div>

@@ -8,12 +8,14 @@ export default function NewsInput({ onAnalyze, isLoading }) {
 
   const handleAnalyze = () => {
     // Validação: verificar se o texto tem pelo menos 50 caracteres
-    if (text.trim().length === 0) {
+    const trimmedText = text.trim();
+    
+    if (trimmedText.length === 0) {
       setError('Por favor, digite o texto da notícia');
       return;
     }
     
-    if (text.trim().length < 50) {
+    if (trimmedText.length < 50) {
       setError('O texto deve ter pelo menos 50 caracteres');
       return;
     }
@@ -26,6 +28,9 @@ export default function NewsInput({ onAnalyze, isLoading }) {
     setText('');
     setError('');
   };
+
+  const trimmedText = text.trim();
+  const isAnalyzeDisabled = trimmedText.length === 0;
 
   return (
     <div className="bg-slate-800 rounded-xl border border-slate-700 p-8 shadow-lg">
@@ -58,7 +63,7 @@ export default function NewsInput({ onAnalyze, isLoading }) {
         <div className="flex gap-3">
           <button
             onClick={handleAnalyze}
-            disabled={text.trim().length === 0}
+            disabled={isAnalyzeDisabled}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             🔍 Analisar
