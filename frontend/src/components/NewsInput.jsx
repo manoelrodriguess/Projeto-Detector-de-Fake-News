@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 
 // Componente de entrada de notícia com validação
@@ -6,16 +6,11 @@ export default function NewsInput({ onAnalyze, isLoading }) {
   const [text, setText] = useState('');
   const [error, setError] = useState('');
 
-  const trimmedText = useMemo(() => text.trim(), [text]);
+  const trimmedText = text.trim();
   const isAnalyzeDisabled = trimmedText.length < 50;
 
   const handleAnalyze = () => {
     // Validação: verificar se o texto tem pelo menos 50 caracteres
-    if (trimmedText.length === 0) {
-      setError('Por favor, digite o texto da notícia');
-      return;
-    }
-    
     if (trimmedText.length < 50) {
       setError('O texto deve ter pelo menos 50 caracteres');
       return;
