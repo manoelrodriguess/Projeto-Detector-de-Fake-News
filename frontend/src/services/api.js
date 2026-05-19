@@ -1,18 +1,25 @@
 // Serviço de comunicação com a API do backend (FastAPI)
 // Endpoint base para as requisições
+import { mockAnalyzeNews, mockExamples } from './mockData';
 
 const API_BASE_URL = 'http://localhost:8000';
+let isBackendAvailable = true;
 
 /**
  * Analisa um texto para detectar se é fake news ou verdadeiro
+ * Com fallback automático para dados mock quando backend não estiver disponível
  * @param {string} text - O texto da notícia a ser analisado
  * @returns {Promise<{classification: string, confidence: number, indicators: array}>}
- * @throws {Error} Erro de rede ou resposta inválida
  */
 export const analyzeNews = async (text) => {
   try {
     if (!text || text.trim().length === 0) {
       throw new Error('O texto não pode estar vazio');
+    }
+
+    // Se backend não estava disponível antes, pula direto para mock
+    if (!isBackendAvailable) {
+      return await mockAnalyzeNews(text);
     }
 
     const response = await fetch(`${API_BASE_URL}/analyze`, {
@@ -42,11 +49,25 @@ export const analyzeNews = async (text) => {
       indicators: data.indicators || [], // array de strings
     };
   } catch (error) {
-    if (error instanceof TypeError) {
-      throw new Error(
-        'Erro de conexão: não foi possível alcançar o servidor. Verifique se o backend está rodando em http://localhost:8000'
-      );
-    }
-    throw error;
+    // Se backend falhar, ativa modo offline com mocks
+    isBackendAvailable = false;
+    console.warn('Backend indisponível. Usando dados mock para demonstração:', error.message);
+    return await mockAnalyzeNews(text);
   }
+};
+
+/**
+ * Retorna os exemplos mock disponíveis para demonstração
+ * Útil para o professor testar a plataforma
+ */
+export const getMockExamples = () => {
+  return mockExamples;
+};
+
+/**
+ * Retorna um exemplo específico para demonstração rápida
+ * @param {string} type - 'true', 'fake' ou 'uncertain'
+ */
+export const getMockExample = (type) => {
+  return mockExamples[type] || null;
 };

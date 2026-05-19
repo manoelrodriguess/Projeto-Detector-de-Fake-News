@@ -26,7 +26,7 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
   return (
     <div className="w-full space-y-6 animate-fadeIn">
       {/* Cartão Principal com Resultado */}
-      <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-2xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
+      <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-2xl border border-slate-700/60 rounded-3xl p-8 shadow-2xl hover:shadow-2xl hover:border-slate-600/80 transition-all duration-300">
         
         {/* Header do Resultado */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -36,17 +36,17 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
               Classificação
             </p>
             
-            <div className={`inline-flex items-center gap-4 px-6 py-4 rounded-xl border-2 w-fit ${
+            <div className={`inline-flex items-center gap-4 px-6 py-4 rounded-2xl border-2 w-fit transition-all duration-300 hover:scale-105 ${
               isTrue
-                ? 'bg-green-500/10 border-green-500/50 shadow-lg shadow-green-500/20'
-                : 'bg-red-500/10 border-red-500/50 shadow-lg shadow-red-500/20'
+                ? 'bg-green-500/15 border-green-500/60 shadow-lg shadow-green-500/30 hover:shadow-green-500/50'
+                : 'bg-red-500/15 border-red-500/60 shadow-lg shadow-red-500/30 hover:shadow-red-500/50'
             }`}>
-              <span className="text-5xl">
+              <span className="text-5xl animate-bounce">
                 {isTrue ? '✅' : '⚠️'}
               </span>
               <div>
                 <h2 className={`text-3xl font-bold leading-none ${
-                  isTrue ? 'text-green-400' : 'text-red-400'
+                  isTrue ? 'text-green-300' : 'text-red-300'
                 }`}>
                   {isTrue ? 'Verdadeiro' : 'Falso'}
                 </h2>
@@ -63,9 +63,9 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
               Confiabilidade
             </p>
             
-            <div className="relative w-40 h-40 mx-auto">
+            <div className="relative w-40 h-40 mx-auto hover:scale-110 transition-transform duration-300">
               {/* Círculo de progresso radial com CSS */}
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+              <svg className="w-full h-full transform -rotate-90 filter drop-shadow-lg" viewBox="0 0 160 160">
                 {/* Fundo do círculo */}
                 <circle
                   cx="80"
@@ -74,6 +74,7 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
                   fill="none"
                   stroke="#1e293b"
                   strokeWidth="8"
+                  opacity="0.3"
                 />
                 {/* Círculo preenchido */}
                 <circle
@@ -84,11 +85,11 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
                   stroke={isTrue ? '#22c55e' : '#ef4444'}
                   strokeWidth="8"
                   strokeDasharray={`${(confidence / 100) * 439.8} 439.8`}
-                  className="transition-all duration-700 ease-out drop-shadow-lg"
+                  className="transition-all duration-1000 ease-out drop-shadow-lg"
                   style={{
                     filter: isTrue
-                      ? 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.5))'
-                      : 'drop-shadow(0 0 20px rgba(239, 68, 68, 0.5))',
+                      ? 'drop-shadow(0 0 25px rgba(34, 197, 94, 0.7))'
+                      : 'drop-shadow(0 0 25px rgba(239, 68, 68, 0.7))',
                   }}
                 />
               </svg>
@@ -106,8 +107,8 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
           </div>
         </div>
 
-        {/* Separador */}
-        <div className="h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent mb-8" />
+        {/* Separador com gradiente */}
+        <div className="h-px bg-gradient-to-r from-transparent via-slate-600/80 to-transparent mb-8" />
 
         {/* Seção de Métricas */}
         <div className="space-y-6">
@@ -142,7 +143,7 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
 
       {/* Indicadores Principais */}
       {result.indicators && result.indicators.length > 0 && (
-        <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border border-slate-700/60 rounded-2xl p-6 hover:border-slate-600/80 transition-all duration-300">
           <h3 className="text-lg font-semibold text-white mb-4">
             🔍 Indicadores Detectados
           </h3>
@@ -150,12 +151,12 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
             {result.indicators.map((indicator, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-600/30 hover:border-slate-500/50 transition-colors"
+                className="flex items-start gap-3 p-4 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-slate-600/40 hover:border-slate-500/70 hover:bg-slate-900/70 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
               >
-                <span className="text-xl mt-0.5">
+                <span className="text-xl mt-0.5 text-2xl">
                   {isTrue ? '✓' : '✗'}
                 </span>
-                <span className="text-slate-300 text-sm">
+                <span className="text-slate-300 text-sm font-medium">
                   {indicator}
                 </span>
               </div>
@@ -174,7 +175,7 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
       <div className="flex flex-col sm:flex-row gap-3 pt-4">
         <button
           onClick={onAnalyzeAnother}
-          className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/50 flex items-center justify-center gap-2"
+          className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 via-blue-500 to-blue-600 hover:from-blue-600 hover:via-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 backdrop-blur-sm border border-blue-400/50 hover:border-blue-300/80"
         >
           🔄 Analisar Outro Texto
         </button>
@@ -185,15 +186,15 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
             navigator.clipboard.writeText(report);
             alert('Relatório copiado para a área de transferência!');
           }}
-          className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-white font-semibold rounded-lg transition-all duration-200 border border-slate-600 hover:border-slate-500 flex items-center justify-center gap-2"
+          className="px-6 py-3 bg-gradient-to-r from-slate-700/60 to-slate-700/40 hover:from-slate-600/80 hover:to-slate-600/60 text-white font-semibold rounded-xl transition-all duration-300 border border-slate-600/60 hover:border-slate-500/80 flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-slate-700/30 hover:scale-105 active:scale-95 backdrop-blur-sm"
         >
           📋 Copiar Relatório
         </button>
       </div>
 
       {/* Disclaimer */}
-      <div className="p-4 bg-slate-900/40 backdrop-blur-sm border border-slate-700/50 rounded-lg">
-        <p className="text-xs text-slate-400 leading-relaxed">
+      <div className="p-4 bg-gradient-to-r from-slate-900/40 to-slate-800/40 backdrop-blur-lg border border-slate-700/60 rounded-xl hover:border-slate-600/80 transition-all duration-300">
+        <p className="text-xs text-slate-400 leading-relaxed hover:text-slate-300 transition-colors duration-300">
           <span className="font-semibold">ℹ️ Informação Importante:</span> Esta análise é fornecida por IA e deve ser validada com fontes de confiança. Resultados são baseados em padrões estatísticos e podem estar sujeitos a limitações e erros.
         </p>
       </div>

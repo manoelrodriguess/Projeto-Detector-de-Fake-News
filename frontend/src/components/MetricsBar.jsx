@@ -13,18 +13,18 @@ export default function MetricsBar({ label, value, color = 'blue' }) {
   const percentage = Math.round(value * 100);
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
+    <div className="space-y-2 group">
+      <div className="flex justify-between items-center group-hover:text-slate-100 transition-colors duration-300">
         <label className="text-sm font-semibold text-slate-300">
           {label}
         </label>
-        <span className="text-lg font-bold text-white">
+        <span className="text-lg font-bold text-white group-hover:text-blue-200 transition-colors duration-300">
           {percentage}%
         </span>
       </div>
       
       {/* Barra de progresso com glassmorphism */}
-      <div className={`w-full h-3 rounded-full ${light} backdrop-blur-sm border border-white/10 overflow-hidden shadow-lg`}>
+      <div className={`w-full h-3 rounded-full ${light} backdrop-blur-lg border border-white/20 overflow-hidden shadow-lg transition-all duration-300 group-hover:border-white/40`}>
         <div
           className={`h-full ${bg} rounded-full transition-all duration-700 ease-out shadow-lg relative`}
           style={{

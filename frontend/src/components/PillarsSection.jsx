@@ -26,7 +26,7 @@ export default function PillarsSection() {
 
   return (
     <div className="w-full py-8">
-      <h2 className="text-2xl font-bold text-white mb-8 text-center">
+      <h2 className="text-2xl font-bold text-white mb-8 text-center hover:text-transparent hover:bg-gradient-to-r hover:from-blue-400 hover:via-cyan-400 hover:to-blue-400 hover:bg-clip-text transition-all duration-300">
         Nossos Pilares
       </h2>
       
@@ -34,18 +34,20 @@ export default function PillarsSection() {
         {pillars.map((pillar, index) => (
           <div
             key={index}
-            className={`group relative bg-gradient-to-br ${pillar.color} backdrop-blur-xl border ${pillar.borderColor} rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl`}
+            className={`group relative bg-gradient-to-br ${pillar.color} backdrop-blur-xl border ${pillar.borderColor} rounded-2xl p-6 transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:border-opacity-100 shadow-lg`}
           >
             {/* Efeito de brilho no hover */}
-            <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
             {/* Conteúdo */}
-            <div className="relative z-10">
-              <div className="text-5xl mb-4">{pillar.icon}</div>
-              <h3 className="text-xl font-bold text-white mb-3">
+            <div className="relative z-10 space-y-3">
+              <div className="text-5xl mb-4 group-hover:scale-125 transition-transform duration-300">
+                {pillar.icon}
+              </div>
+              <h3 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-cyan-300 group-hover:bg-clip-text transition-all duration-300">
                 {pillar.title}
               </h3>
-              <p className="text-slate-300 text-sm leading-relaxed">
+              <p className="text-slate-300 text-sm leading-relaxed group-hover:text-slate-200 transition-colors duration-300">
                 {pillar.description}
               </p>
             </div>
