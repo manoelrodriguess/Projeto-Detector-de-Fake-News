@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pillow
+pypdf
+pandas
+python-multipart
+groq
+python-dotenv
+scikit-learn
