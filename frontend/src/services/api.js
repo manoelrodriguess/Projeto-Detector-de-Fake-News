@@ -1,4 +1,14 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const normalizeApiBaseUrl = (value) => {
+  const trimmed = String(value || 'http://localhost:8000').replace(/\/+$/, '');
+
+  if (trimmed.endsWith('/api')) {
+    return trimmed.slice(0, -4);
+  }
+
+  return trimmed;
+};
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 
 const normalizeAnalysisResponse = (data) => {
   if (!data || !data.classification || data.confidence === undefined) {
