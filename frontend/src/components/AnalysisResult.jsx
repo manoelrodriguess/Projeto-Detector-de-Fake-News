@@ -7,8 +7,9 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
 
   const isTrue = result.classification === 'true';
   const confidence = Math.round(result.confidence * 100);
+  const suspiciousSpans = result.suspiciousSpans || [];
+  const confidenceRaw = typeof result.confidenceRaw === 'number' ? Math.round(result.confidenceRaw * 100) : null;
 
-  // Dados simulados de métricas da IA (em produção viriam do backend)
   const metrics = {
     timeliness: isTrue ? 0.92 : 0.45,      // Atualização
     clarity: isTrue ? 0.87 : 0.62,         // Clareza
@@ -16,17 +17,10 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
     reliability: isTrue ? 0.89 : 0.51,     // Confiabilidade
   };
 
-  // Termos destacados simulados
-  const highlightedTerms = [
-    { word: 'análise', type: 'relevant' },
-    { word: 'suspeito', type: 'suspicious' },
-    { word: 'verificação', type: 'relevant' },
-  ];
-
   return (
     <div className="w-full space-y-6 animate-fadeIn">
       {/* Cartão Principal com Resultado */}
-      <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-2xl border border-slate-700/60 rounded-3xl p-8 shadow-2xl hover:shadow-2xl hover:border-slate-600/80 transition-all duration-300">
+      <div className="bg-linear-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-2xl border border-slate-700/60 rounded-3xl p-8 shadow-2xl hover:shadow-2xl hover:border-slate-600/80 transition-all duration-300">
         
         {/* Header do Resultado */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -107,8 +101,21 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
           </div>
         </div>
 
-        {/* Separador com gradiente */}
-        <div className="h-px bg-gradient-to-r from-transparent via-slate-600/80 to-transparent mb-8" />
+          {/* Separador com gradiente */}
+        <div className="h-px bg-linear-to-r from-transparent via-slate-600/80 to-transparent mb-8" />
+
+          {/* Confiança bruta (modelo) vs ajustada */}
+          <div className="mb-4 text-sm text-slate-400">
+            {confidenceRaw !== null ? (
+              <div>
+                <strong>Modelo:</strong> {confidenceRaw}% — <strong>Ajustado:</strong> {confidence}%
+              </div>
+            ) : (
+              <div>
+                <strong>Ajustado:</strong> {confidence}%
+              </div>
+            )}
+          </div>
 
         {/* Seção de Métricas */}
         <div className="space-y-6">
@@ -141,9 +148,21 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
         </div>
       </div>
 
+      {/* Texto lido do arquivo/imagem */}
+      {originalText && (
+        <div className="bg-linear-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border border-slate-700/60 rounded-2xl p-6 transition-all duration-300">
+          <h3 className="text-lg font-semibold text-white mb-3">
+            📄 Texto extraído para análise
+          </h3>
+          <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+            {originalText}
+          </p>
+        </div>
+      )}
+
       {/* Indicadores Principais */}
       {result.indicators && result.indicators.length > 0 && (
-        <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border border-slate-700/60 rounded-2xl p-6 hover:border-slate-600/80 transition-all duration-300">
+        <div className="bg-linear-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border border-slate-700/60 rounded-2xl p-6 hover:border-slate-600/80 transition-all duration-300">
           <h3 className="text-lg font-semibold text-white mb-4">
             🔍 Indicadores Detectados
           </h3>
@@ -153,7 +172,7 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
                 key={index}
                 className="flex items-start gap-3 p-4 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-slate-600/40 hover:border-slate-500/70 hover:bg-slate-900/70 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
               >
-                <span className="text-xl mt-0.5 text-2xl">
+                <span className="text-2xl mt-0.5">
                   {isTrue ? '✓' : '✗'}
                 </span>
                 <span className="text-slate-300 text-sm font-medium">
@@ -166,16 +185,34 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
       )}
 
       {/* Texto com Highlights */}
-      <HighlightedText
-        text={originalText}
-        highlightedTerms={highlightedTerms}
-      />
+      <HighlightedText text={originalText} suspiciousSpans={suspiciousSpans} />
+
+      {suspiciousSpans.length > 0 && (
+        <div className="bg-linear-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border border-slate-700/60 rounded-2xl p-6 hover:border-slate-600/80 transition-all duration-300">
+          <h3 className="text-lg font-semibold text-white mb-4">
+            🧩 Trechos possivelmente falsos
+          </h3>
+          <div className="space-y-3">
+            {suspiciousSpans.map((span, index) => (
+              <div
+                key={`${index}-${span.excerpt}`}
+                className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-slate-100"
+              >
+                <p className="font-semibold text-red-200">“{span.excerpt}”</p>
+                {span.reason && (
+                  <p className="mt-2 text-sm text-slate-300">{span.reason}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Botões de Ação */}
       <div className="flex flex-col sm:flex-row gap-3 pt-4">
         <button
           onClick={onAnalyzeAnother}
-          className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 via-blue-500 to-blue-600 hover:from-blue-600 hover:via-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 backdrop-blur-sm border border-blue-400/50 hover:border-blue-300/80"
+          className="flex-1 px-6 py-3 bg-linear-to-r from-blue-500 via-blue-500 to-blue-600 hover:from-blue-600 hover:via-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 backdrop-blur-sm border border-blue-400/50 hover:border-blue-300/80"
         >
           🔄 Analisar Outro Texto
         </button>
@@ -186,14 +223,14 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
             navigator.clipboard.writeText(report);
             alert('Relatório copiado para a área de transferência!');
           }}
-          className="px-6 py-3 bg-gradient-to-r from-slate-700/60 to-slate-700/40 hover:from-slate-600/80 hover:to-slate-600/60 text-white font-semibold rounded-xl transition-all duration-300 border border-slate-600/60 hover:border-slate-500/80 flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-slate-700/30 hover:scale-105 active:scale-95 backdrop-blur-sm"
+          className="px-6 py-3 bg-linear-to-r from-slate-700/60 to-slate-700/40 hover:from-slate-600/80 hover:to-slate-600/60 text-white font-semibold rounded-xl transition-all duration-300 border border-slate-600/60 hover:border-slate-500/80 flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-slate-700/30 hover:scale-105 active:scale-95 backdrop-blur-sm"
         >
           📋 Copiar Relatório
         </button>
       </div>
 
       {/* Disclaimer */}
-      <div className="p-4 bg-gradient-to-r from-slate-900/40 to-slate-800/40 backdrop-blur-lg border border-slate-700/60 rounded-xl hover:border-slate-600/80 transition-all duration-300">
+      <div className="p-4 bg-linear-to-r from-slate-900/40 to-slate-800/40 backdrop-blur-lg border border-slate-700/60 rounded-xl hover:border-slate-600/80 transition-all duration-300">
         <p className="text-xs text-slate-400 leading-relaxed hover:text-slate-300 transition-colors duration-300">
           <span className="font-semibold">ℹ️ Informação Importante:</span> Esta análise é fornecida por IA e deve ser validada com fontes de confiança. Resultados são baseados em padrões estatísticos e podem estar sujeitos a limitações e erros.
         </p>

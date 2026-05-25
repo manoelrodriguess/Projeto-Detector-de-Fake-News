@@ -1,25 +1,63 @@
-// Componente que exibe o texto com destaque das palavras identificadas como suspeitas
-export default function HighlightedText({ text, highlightedTerms = [] }) {
+// Componente que exibe o texto com destaque dos trechos sinalizados pela IA
+export default function HighlightedText({ text, suspiciousSpans = [] }) {
   if (!text) return null;
 
-  // Ordena os termos destacados por posição decrescente para evitar conflitos de índice
-  const sortedTerms = highlightedTerms
-    .map(term => ({
-      ...term,
-      index: text.toLowerCase().indexOf(term.word.toLowerCase()),
+  const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  const spans = suspiciousSpans
+    .map((span) => ({
+      ...span,
+      excerpt: String(span.excerpt || '').trim(),
+      reason: String(span.reason || '').trim(),
     }))
-    .filter(term => term.index !== -1)
-    .sort((a, b) => b.index - a.index);
+    .filter((span) => span.excerpt.length > 0)
+    .sort((a, b) => b.excerpt.length - a.excerpt.length);
 
-  let highlightedText = text;
+  const segments = [{ text, highlighted: false, reason: '' }];
 
-  // Substitui cada termo pelo componente de highlight
-  sortedTerms.forEach(({ word, type }) => {
-    const regex = new RegExp(`\\b${word}\\b`, 'gi');
-    highlightedText = highlightedText.replace(
-      regex,
-      `<mark data-type="${type}">${word}</mark>`
-    );
+  spans.forEach((span) => {
+    const pattern = new RegExp(escapeRegExp(span.excerpt), 'gi');
+    const nextSegments = [];
+
+    segments.forEach((segment) => {
+      if (segment.highlighted) {
+        nextSegments.push(segment);
+        return;
+      }
+
+      let lastIndex = 0;
+      let match;
+      const segmentText = segment.text;
+      pattern.lastIndex = 0;
+
+      while ((match = pattern.exec(segmentText)) !== null) {
+        if (match.index > lastIndex) {
+          nextSegments.push({
+            text: segmentText.slice(lastIndex, match.index),
+            highlighted: false,
+            reason: '',
+          });
+        }
+
+        nextSegments.push({
+          text: segmentText.slice(match.index, match.index + match[0].length),
+          highlighted: true,
+          reason: span.reason,
+        });
+
+        lastIndex = match.index + match[0].length;
+      }
+
+      if (lastIndex < segmentText.length) {
+        nextSegments.push({
+          text: segmentText.slice(lastIndex),
+          highlighted: false,
+          reason: '',
+        });
+      }
+    });
+
+    segments.splice(0, segments.length, ...nextSegments);
   });
 
   return (
@@ -28,52 +66,33 @@ export default function HighlightedText({ text, highlightedTerms = [] }) {
       
       <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-lg p-6 leading-relaxed text-slate-200 max-h-64 overflow-y-auto">
         {/* Renderiza o texto com highlights */}
-        {sortedTerms.length === 0 ? (
-          <p className="text-slate-400">{text}</p>
+        {spans.length === 0 ? (
+          <p className="text-slate-400 whitespace-pre-wrap">{text}</p>
         ) : (
           <p className="whitespace-pre-wrap">
-            {text.split(/(\s+)/).map((word, index) => {
-              const found = highlightedTerms.find(
-                term => term.word.toLowerCase() === word.toLowerCase()
-              );
-
-              if (!found) {
-                return word;
-              }
-
-              return (
-                <span
-                  key={index}
-                  className={`px-2 py-1 rounded font-semibold transition-all ${
-                    found.type === 'suspicious'
-                      ? 'bg-red-500/30 text-red-200 border border-red-400/50 hover:bg-red-500/50'
-                      : found.type === 'warning'
-                      ? 'bg-yellow-500/30 text-yellow-200 border border-yellow-400/50 hover:bg-yellow-500/50'
-                      : 'bg-blue-500/30 text-blue-200 border border-blue-400/50 hover:bg-blue-500/50'
-                  }`}
+            {segments.map((segment, index) =>
+              segment.highlighted ? (
+                <mark
+                  key={`${index}-${segment.text}`}
+                  title={segment.reason}
+                  className="rounded px-1.5 py-0.5 bg-red-500/30 text-red-100 border border-red-400/60 shadow-sm shadow-red-500/10"
                 >
-                  {word}
-                </span>
-              );
-            })}
+                  {segment.text}
+                </mark>
+              ) : (
+                <span key={`${index}-${segment.text}`}>{segment.text}</span>
+              )
+            )}
           </p>
         )}
       </div>
 
       {/* Legenda */}
-      {sortedTerms.length > 0 && (
+      {spans.length > 0 && (
         <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-700/50">
           <div className="flex items-center gap-2 text-sm">
             <span className="w-3 h-3 rounded bg-red-500/30 border border-red-400/50" />
-            <span className="text-slate-400">Suspeito</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="w-3 h-3 rounded bg-yellow-500/30 border border-yellow-400/50" />
-            <span className="text-slate-400">Aviso</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="w-3 h-3 rounded bg-blue-500/30 border border-blue-400/50" />
-            <span className="text-slate-400">Relevante</span>
+            <span className="text-slate-400">Trecho possivelmente falso</span>
           </div>
         </div>
       )}
