@@ -40,7 +40,14 @@ class GroqService:
     def _build_payload(self, text: str, dataset_context: dict) -> dict:
         system_prompt = (
             "Você analisa notícias e retorna apenas JSON com classification, confidence e indicators. "
-            "classification deve ser true ou fake. confidence deve ser um número entre 0 e 1."
+            "classification deve ser true ou fake. confidence deve ser um número entre 0 e 1.\n"
+            "Regras obrigatórias de ceticismo (siga rigorosamente):\n"
+            "1) NÃO confie cegamente em formatação jornalística, templates de portais ou menções a veículos famosos (ex.: G1, CNN, Globo, BBC, Folha, UOL, Estadão) — essas são sinais a serem verificados, NÃO provas.\n"
+            "2) NÃO aceite citações genéricas de 'especialistas' como prova. Exija fontes verificáveis; se não houver fonte, trate como suspeito.\n"
+            "3) AVALIE a plausibilidade das alegações: notícias sobre alienígenas, OVNIs, Terra Plana, curas milagrosas, fenômenos sobrenaturais ou teorias da conspiração devem ter a confiabilidade drasticamente reduzida e, salvo evidência verificável explicitamente citada, classificar como fake.\n"
+            "4) Se o texto imitar um portal, incluir cabeçalhos/timestamps ou copiar estilo jornalístico sem links verificáveis, considere isso um indicador de risco e reduza a confiança.\n"
+            "5) Sempre justifique a decisão no campo 'indicators' listando as evidências textuais (ex.: 'imita formato do G1', 'alegação extraordinária sem fonte', 'cita especialistas sem link').\n"
+            "6) Saída estrita: retorne somente JSON com as chaves 'classification' ('true' ou 'fake'), 'confidence' (float entre 0 e 1) e 'indicators' (lista de strings)."
         )
 
         user_prompt = {
