@@ -19,7 +19,7 @@
 }
 
 body {
-  @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white;
+  @apply bg-slate-950 text-white;
 }
 
 html {
@@ -259,20 +259,19 @@ html {
    ============================================================ */
 
 .glassmorphism {
-  @apply bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl;
+  @apply bg-slate-900 backdrop-blur-xl border border-slate-800 rounded-2xl;
 }
 
 .glassmorphism-sm {
-  @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg shadow-lg;
+  @apply bg-slate-950/80 backdrop-blur-lg border border-slate-800 rounded-lg;
 }
 
 .glassmorphism-hover {
-  @apply transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:shadow-2xl;
+  @apply transition-all duration-300 hover:bg-slate-800 hover:border-slate-700;
 }
 
-/* Efeito de borda brilhante para elementos especiais */
 .glow-border {
-  @apply border border-transparent bg-gradient-to-r from-blue-500 to-cyan-500 bg-origin-border;
+  @apply border border-slate-700 bg-slate-900;
 }
 
 /* ============================================================
@@ -295,12 +294,12 @@ html {
 
 /* Seleção de texto */
 ::selection {
-  @apply bg-blue-500 text-white;
+  @apply bg-slate-700 text-white;
 }
 
 /* Focus visível para acessibilidade */
 :focus-visible {
-  @apply outline-none ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-950;
+  @apply outline-none ring-2 ring-slate-500 ring-offset-2 ring-offset-slate-950;
 }
 
 /* ============================================================
@@ -309,23 +308,23 @@ html {
 
 @layer components {
   .card-glass {
-    @apply bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-2xl border border-slate-700/50 rounded-2xl shadow-2xl p-6;
+    @apply bg-slate-900 backdrop-blur-2xl border border-slate-800 rounded-2xl p-6;
   }
 
   .card-glass-sm {
-    @apply bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-xl p-6 shadow-lg;
+    @apply bg-slate-950/80 backdrop-blur-xl border border-slate-800 rounded-xl p-6;
   }
 
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/50;
+    @apply px-6 py-3 bg-slate-100 hover:bg-white text-slate-950 font-semibold rounded-lg transition-colors duration-200;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-white font-semibold rounded-lg transition-all duration-200 border border-slate-600 hover:border-slate-500;
+    @apply px-6 py-3 bg-slate-900 hover:bg-slate-800 text-slate-100 font-semibold rounded-lg transition-colors duration-200 border border-slate-800 hover:border-slate-700;
   }
 
   .input-dark {
-    @apply bg-slate-900 text-white border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500 transition-all duration-200;
+    @apply bg-slate-950 text-white border border-slate-800 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 placeholder-slate-500 transition-colors duration-200;
   }
 
   .badge-success {
@@ -341,7 +340,7 @@ html {
   }
 
   .metric-bar {
-    @apply h-3 rounded-full bg-slate-700/30 backdrop-blur-sm border border-white/10 overflow-hidden shadow-lg;
+    @apply h-3 rounded-full bg-slate-800 backdrop-blur-sm border border-slate-700 overflow-hidden;
   }
 }
 
@@ -350,11 +349,11 @@ html {
    ============================================================ */
 
 .gradient-text {
-  @apply bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent;
+  @apply text-slate-100;
 }
 
 .text-glow {
-  @apply text-white drop-shadow-lg;
+  @apply text-white;
 }
 
 /* ============================================================
@@ -432,13 +431,13 @@ html {
 
 /* Gradientes de fundo para elementos especiais */
 .gradient-bg-blue {
-  @apply bg-gradient-to-br from-blue-500/20 to-blue-600/20;
+  @apply bg-slate-900;
 }
 
 .gradient-bg-purple {
-  @apply bg-gradient-to-br from-purple-500/20 to-purple-600/20;
+  @apply bg-slate-900;
 }
 
 .gradient-bg-cyan {
-  @apply bg-gradient-to-br from-cyan-500/20 to-cyan-600/20;
+  @apply bg-slate-900;
 }

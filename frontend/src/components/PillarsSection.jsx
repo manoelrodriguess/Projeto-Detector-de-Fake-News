@@ -1,32 +1,27 @@
-// Seção com 3 pilares informativos sobre o projeto
+import { BarChart3, Cpu, ShieldCheck } from 'lucide-react';
+
 export default function PillarsSection() {
   const pillars = [
     {
-      icon: '📊',
+      icon: BarChart3,
       title: 'Padronização',
       description: 'Tratamento consistente de dados de múltiplas fontes para análise unificada',
-      color: 'from-blue-500/20 to-blue-600/20',
-      borderColor: 'border-blue-400/30',
     },
     {
-      icon: '🤖',
+      icon: Cpu,
       title: 'Análise de IA',
       description: 'Redução da subjetividade humana através de algoritmos de aprendizado de máquina',
-      color: 'from-purple-500/20 to-purple-600/20',
-      borderColor: 'border-purple-400/30',
     },
     {
-      icon: '✨',
+      icon: ShieldCheck,
       title: 'Confiança',
       description: 'Apoio à tomada de decisão baseada em fatos e métricas verificáveis',
-      color: 'from-cyan-500/20 to-cyan-600/20',
-      borderColor: 'border-cyan-400/30',
     },
   ];
 
   return (
     <div className="w-full py-8">
-      <h2 className="text-2xl font-bold text-white mb-8 text-center hover:text-transparent hover:bg-gradient-to-r hover:from-blue-400 hover:via-cyan-400 hover:to-blue-400 hover:bg-clip-text transition-all duration-300">
+      <h2 className="text-2xl font-semibold text-slate-100 mb-8 text-center">
         Nossos Pilares
       </h2>
       
@@ -34,20 +29,16 @@ export default function PillarsSection() {
         {pillars.map((pillar, index) => (
           <div
             key={index}
-            className={`group relative bg-gradient-to-br ${pillar.color} backdrop-blur-xl border ${pillar.borderColor} rounded-2xl p-6 transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:border-opacity-100 shadow-lg`}
+            className="group relative rounded-2xl border border-slate-800 bg-slate-900 p-6 transition-transform duration-200 hover:-translate-y-1 hover:border-slate-700"
           >
-            {/* Efeito de brilho no hover */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            {/* Conteúdo */}
             <div className="relative z-10 space-y-3">
-              <div className="text-5xl mb-4 group-hover:scale-125 transition-transform duration-300">
-                {pillar.icon}
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-slate-950 text-slate-100">
+                <pillar.icon className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-cyan-300 group-hover:bg-clip-text transition-all duration-300">
+              <h3 className="text-xl font-semibold text-slate-100">
                 {pillar.title}
               </h3>
-              <p className="text-slate-300 text-sm leading-relaxed group-hover:text-slate-200 transition-colors duration-300">
+              <p className="text-sm leading-relaxed text-slate-400">
                 {pillar.description}
               </p>
             </div>

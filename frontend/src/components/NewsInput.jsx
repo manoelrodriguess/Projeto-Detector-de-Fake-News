@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import { FileText, Paperclip, ScanSearch, Search, Shuffle, Trash2, TriangleAlert, X } from 'lucide-react';
 
-// Componente de input para colar/digitar a notícia a ser analisada
 export default function NewsInput({
   text,
   setText,
@@ -20,7 +20,6 @@ export default function NewsInput({
   const acceptedFileTypes = '.txt,.pdf,.png,.jpg,.jpeg,.webp,.bmp,.tiff';
 
   const handleAnalyze = () => {
-    // Limpar erro anterior
     setError('');
 
     if (selectedFile) {
@@ -33,7 +32,6 @@ export default function NewsInput({
       return;
     }
 
-    // Validações
     if (!text.trim()) {
       setError('Por favor, digite ou cole uma notícia para analisar');
       return;
@@ -44,12 +42,10 @@ export default function NewsInput({
       return;
     }
 
-    // Chamar função do parent
     onAnalyze(text);
   };
 
   const handleKeyDown = (e) => {
-    // Permitir Ctrl+Enter para enviar
     if (e.ctrlKey && e.key === 'Enter') {
       handleAnalyze();
     }
@@ -158,8 +154,9 @@ export default function NewsInput({
 
   return (
     <div className="w-full space-y-4">
-      <label htmlFor="newsInput" className="block text-white font-bold text-lg">
-        📝 Cole ou Digite uma Notícia
+      <label htmlFor="newsInput" className="flex items-center gap-2 text-lg font-semibold text-slate-100">
+        <FileText className="h-5 w-5" />
+        Cole ou digite uma notícia
       </label>
 
       <div
@@ -182,7 +179,7 @@ export default function NewsInput({
         onDrop={handleDrop}
       >
         {isDragging && (
-          <div className="absolute inset-0 z-10 rounded-xl border-2 border-dashed border-cyan-400 bg-cyan-500/10 backdrop-blur-sm flex items-center justify-center text-cyan-100 font-semibold pointer-events-none">
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl border-2 border-dashed border-slate-700 bg-slate-950/90 font-semibold text-slate-200 pointer-events-none">
             Solte a imagem ou arquivo aqui
           </div>
         )}
@@ -190,7 +187,7 @@ export default function NewsInput({
         {selectedFile && previewUrl && (
           <div
             onClick={openPreview}
-            className="group absolute left-3 top-3 z-20 w-40 max-w-[45vw] overflow-hidden rounded-2xl border border-slate-600/70 bg-slate-950/80 shadow-xl shadow-black/40 backdrop-blur-md text-left transition-transform duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-zoom-in"
+            className="group absolute left-3 top-3 z-20 w-40 max-w-[45vw] overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/90 text-left transition-transform duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-zoom-in"
             role="button"
             tabIndex={0}
             onKeyDown={(event) => {
@@ -204,29 +201,29 @@ export default function NewsInput({
               <img
                 src={previewUrl}
                 alt={`Pré-visualização de ${selectedFile.name}`}
-                className="block w-full max-h-32 object-cover object-center transition duration-300 group-hover:brightness-75"
+                className="block w-full max-h-32 object-cover object-center transition duration-300 group-hover:brightness-90"
               />
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition duration-300 group-hover:bg-black/20">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/45 text-white opacity-0 scale-90 transition duration-300 group-hover:opacity-100 group-hover:scale-100 shadow-lg backdrop-blur-sm">
-                  🔍
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-slate-100 opacity-0 scale-90 transition duration-300 group-hover:opacity-100 group-hover:scale-100">
+                  <Search className="h-5 w-5" />
                 </span>
               </div>
               <button
                 type="button"
                 onClick={clearSelectedFile}
                 aria-label="Remover imagem anexada"
-                className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white shadow-lg hover:bg-black/80 hover:scale-105 transition-all duration-200"
+                className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-700 bg-slate-950/80 text-slate-100 transition-all duration-200 hover:bg-slate-900 hover:scale-105"
                 onMouseDown={(event) => event.stopPropagation()}
                 onClick={(event) => {
                   event.stopPropagation();
                   clearSelectedFile();
                 }}
               >
-                ✕
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 text-[11px] text-slate-200 bg-slate-900/90 border-t border-slate-700/70">
+            <div className="flex items-center gap-2 border-t border-slate-800 bg-slate-900 px-3 py-2 text-[11px] text-slate-300">
               <span className="truncate">{selectedFile.name}</span>
             </div>
           </div>
@@ -271,33 +268,34 @@ export default function NewsInput({
                 }
               }
             } catch (err) {
-              // não bloquear a colagem normal se houver erro
               console.error('Erro ao processar paste:', err);
             }
           }}
           disabled={disabled || isLoading}
           placeholder="Digite ou cole uma notícia, postagem, artigo ou qualquer texto para análise..."
-          className="w-full h-48 p-4 bg-slate-900/70 text-white border-2 border-slate-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 resize-none disabled:opacity-50 disabled:cursor-not-allowed placeholder-slate-500 backdrop-blur-md transition-all duration-300 hover:border-slate-500 hover:bg-slate-900/80 hover:shadow-lg hover:shadow-blue-500/10 focus:shadow-xl focus:shadow-blue-500/20 group-hover:border-slate-400/50"
+          className="w-full h-48 resize-none rounded-xl border-2 border-slate-800 bg-slate-950 p-4 text-white placeholder-slate-500 transition-colors duration-200 focus:border-slate-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         />
 
         {selectedFile && !previewUrl && (
-          <div className="absolute left-3 bottom-3 right-28 px-3 py-2 rounded-xl text-xs font-semibold backdrop-blur-md border bg-blue-500/20 text-blue-100 border-blue-400/50 shadow-lg shadow-blue-500/20 truncate">
-            📎 {selectedFile.name}
+          <div className="absolute left-3 bottom-3 right-28 truncate rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-200">
+            <span className="inline-flex items-center gap-2">
+              <Paperclip className="h-3.5 w-3.5" />
+              {selectedFile.name}
+            </span>
             <button
               type="button"
               onClick={clearSelectedFile}
-              className="ml-2 underline text-blue-200 hover:text-white"
+              className="ml-2 text-slate-400 underline hover:text-slate-200"
             >
               remover
             </button>
           </div>
         )}
 
-        {/* Indicador de caracteres no canto */}
-        <div className={`absolute bottom-3 right-3 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md border transition-all shadow-lg ${
+        <div className={`absolute bottom-3 right-3 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
           selectedFile || charCount >= 50
-            ? 'bg-green-500/25 text-green-200 border-green-400/60 shadow-green-500/20 hover:shadow-green-500/40'
-            : 'bg-yellow-500/25 text-yellow-200 border-yellow-400/60 shadow-yellow-500/20 hover:shadow-yellow-500/40'
+            ? 'border-slate-700 bg-slate-900 text-slate-200'
+            : 'border-slate-700 bg-slate-900 text-slate-400'
         }`}>
           {selectedFile ? 'arquivo' : `${charCount} / 50`}
         </div>
@@ -306,75 +304,72 @@ export default function NewsInput({
       <div className="flex flex-wrap gap-3">
         <label
           htmlFor="newsFileInput"
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-slate-600/60 bg-slate-800/70 text-slate-100 hover:bg-slate-700/80 hover:border-slate-500/80 cursor-pointer transition-all duration-300"
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-slate-200 transition-colors duration-200 hover:bg-slate-800"
         >
-          📎 Anexar arquivo, imagem ou print
+          <Paperclip className="h-4 w-4" />
+          Anexar arquivo, imagem ou print
         </label>
 
         {selectedFile && (
           <button
             type="button"
             onClick={clearSelectedFile}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-slate-600/60 bg-slate-800/70 text-slate-100 hover:bg-slate-700/80 hover:border-slate-500/80 transition-all duration-300"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-slate-200 transition-colors duration-200 hover:bg-slate-800"
           >
-            ✖ Limpar anexo
+            <Trash2 className="h-4 w-4" />
+            Limpar anexo
           </button>
         )}
       </div>
 
-      {/* Barra de progresso de caracteres */}
-      <div className="w-full h-2 rounded-full bg-slate-700/40 backdrop-blur-md overflow-hidden border border-slate-600/60 shadow-lg shadow-slate-900/50">
+      <div className="h-2 w-full overflow-hidden rounded-full border border-slate-800 bg-slate-900">
         <div
           className={`h-full transition-all duration-300 rounded-full relative ${
-            isValid ? 'bg-linear-to-r from-green-500 via-cyan-500 to-green-500' : 'bg-linear-to-r from-yellow-500 via-orange-500 to-yellow-500'
+            isValid ? 'bg-slate-300' : 'bg-slate-600'
           }`}
           style={{
             width: `${percentage}%`,
-            boxShadow: isValid
-              ? '0 0 15px rgba(34, 197, 94, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.2)'
-              : '0 0 15px rgba(251, 146, 60, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.2)',
           }}
-        >
-          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
-        </div>
+        />
       </div>
 
-      {/* Mensagem de erro com animação */}
       {error && (
-        <div className="animate-slideInDown p-4 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-lg text-red-300 text-sm">
+        <div className="animate-slideInDown rounded-lg border border-red-900 bg-slate-950 p-4 text-sm text-red-200">
           <div className="flex items-center gap-2">
-            <span>⚠️</span>
+            <TriangleAlert className="h-4 w-4" />
             <span>{error}</span>
           </div>
         </div>
       )}
 
-      {/* Botão de análise com estado */}
       <button
         onClick={handleAnalyze}
         disabled={isDisabled}
-        className={`w-full px-6 py-4 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-lg group ${
+        className={`flex w-full items-center justify-center gap-2 rounded-xl px-6 py-4 text-lg font-semibold transition-colors duration-200 ${
           isDisabled
-            ? 'bg-slate-700/30 text-slate-400 cursor-not-allowed border border-slate-600/30 backdrop-blur-sm'
-            : 'bg-linear-to-r from-blue-500 via-cyan-500 to-blue-500 hover:from-blue-600 hover:via-cyan-600 hover:to-blue-600 text-white shadow-lg shadow-blue-500/60 hover:shadow-blue-500 border border-blue-400/60 hover:border-blue-300/80 hover:scale-105 active:scale-95 backdrop-blur-sm'
+            ? 'cursor-not-allowed border border-slate-800 bg-slate-900 text-slate-500'
+            : 'border border-slate-700 bg-slate-100 text-slate-950 hover:bg-white active:scale-[0.99]'
         }`}
       >
         {isLoading ? (
           <>
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="h-5 w-5 rounded-full border-2 border-slate-500 border-t-slate-100 animate-spin" />
             Analisando...
           </>
         ) : selectedFile ? (
           <>
-            🚀 Analisar arquivo
+            <ScanSearch className="h-5 w-5" />
+            Analisar arquivo
           </>
         ) : !isValid ? (
           <>
-            🔒 Mínimo 50 caracteres
+            <TriangleAlert className="h-5 w-5" />
+            Mínimo 50 caracteres
           </>
         ) : (
           <>
-            🚀 Analisar
+            <ScanSearch className="h-5 w-5" />
+            Analisar
           </>
         )}
       </button>
@@ -384,24 +379,25 @@ export default function NewsInput({
           type="button"
           onClick={onLoadRandomNews}
           disabled={disabled || isLoading}
-          className="w-full px-6 py-3 font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-base bg-slate-800/60 hover:bg-slate-700/70 text-slate-100 border border-slate-600/60 hover:border-slate-500/80 hover:scale-105 active:scale-95 backdrop-blur-sm"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-6 py-3 text-base font-semibold text-slate-200 transition-colors duration-200 hover:bg-slate-800"
         >
-          🎲 Carregar notícia aleatória do backend
+          <Shuffle className="h-4 w-4" />
+          Carregar notícia aleatória do backend
         </button>
       )}
 
-      <p className="text-slate-500 text-xs text-center leading-relaxed">
-        💡 Dica: pressione <span className="bg-slate-800/50 px-2 py-1 rounded text-slate-400">Ctrl+Enter</span> para enviar mais rapidamente
+      <p className="text-center text-xs leading-relaxed text-slate-500">
+        Dica: pressione <span className="rounded bg-slate-900 px-2 py-1 text-slate-400">Ctrl+Enter</span> para enviar mais rapidamente
       </p>
 
       {isPreviewOpen && previewUrl && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 opacity-0 animate-[fadeIn_300ms_ease-out_forwards]"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 opacity-0 animate-[fadeIn_300ms_ease-out_forwards]"
           onClick={closePreview}
           role="presentation"
         >
           <div
-            className="relative w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-black/60 scale-95 animate-[scaleIn_300ms_ease-out_forwards]"
+            className="relative w-full max-w-5xl scale-95 overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 animate-[scaleIn_300ms_ease-out_forwards]"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -411,12 +407,12 @@ export default function NewsInput({
               type="button"
               onClick={closePreview}
               aria-label="Fechar visualização"
-              className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white shadow-lg transition-all duration-200 hover:bg-black/80 hover:scale-105"
+              className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-950 text-slate-100 transition-colors duration-200 hover:bg-slate-900"
             >
-              ✕
+              <X className="h-5 w-5" />
             </button>
 
-            <div className="max-h-[85vh] overflow-auto bg-black/30">
+            <div className="max-h-[85vh] overflow-auto bg-black/20">
               <img
                 src={previewUrl}
                 alt={`Imagem ampliada de ${selectedFile?.name || 'imagem anexada'}`}
@@ -424,7 +420,7 @@ export default function NewsInput({
               />
             </div>
 
-            <div className="border-t border-white/10 px-5 py-4 text-sm text-slate-200 bg-slate-950/95">
+            <div className="border-t border-slate-800 bg-slate-950 px-5 py-4 text-sm text-slate-300">
               <p className="truncate font-medium">{selectedFile?.name}</p>
             </div>
           </div>

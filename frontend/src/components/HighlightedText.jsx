@@ -1,4 +1,5 @@
-// Componente que exibe o texto com destaque dos trechos sinalizados pela IA
+import { FileText } from 'lucide-react';
+
 export default function HighlightedText({ text, suspiciousSpans = [] }) {
   if (!text) return null;
 
@@ -62,10 +63,12 @@ export default function HighlightedText({ text, suspiciousSpans = [] }) {
 
   return (
     <div className="w-full space-y-3">
-      <h3 className="text-lg font-semibold text-white">📄 Análise do Texto</h3>
+      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-100">
+        <FileText className="h-4 w-4" />
+        Análise do Texto
+      </h3>
       
-      <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-lg p-6 leading-relaxed text-slate-200 max-h-64 overflow-y-auto">
-        {/* Renderiza o texto com highlights */}
+      <div className="max-h-64 overflow-y-auto rounded-lg border border-slate-800 bg-slate-950 p-6 leading-relaxed text-slate-200">
         {spans.length === 0 ? (
           <p className="text-slate-400 whitespace-pre-wrap">{text}</p>
         ) : (
@@ -75,7 +78,7 @@ export default function HighlightedText({ text, suspiciousSpans = [] }) {
                 <mark
                   key={`${index}-${segment.text}`}
                   title={segment.reason}
-                  className="rounded px-1.5 py-0.5 bg-red-500/30 text-red-100 border border-red-400/60 shadow-sm shadow-red-500/10"
+                  className="rounded px-1.5 py-0.5 border border-red-900 bg-red-950 text-red-100"
                 >
                   {segment.text}
                 </mark>
@@ -87,11 +90,10 @@ export default function HighlightedText({ text, suspiciousSpans = [] }) {
         )}
       </div>
 
-      {/* Legenda */}
       {spans.length > 0 && (
-        <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-700/50">
+        <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-800">
           <div className="flex items-center gap-2 text-sm">
-            <span className="w-3 h-3 rounded bg-red-500/30 border border-red-400/50" />
+            <span className="w-3 h-3 rounded bg-red-950 border border-red-900" />
             <span className="text-slate-400">Trecho possivelmente falso</span>
           </div>
         </div>
