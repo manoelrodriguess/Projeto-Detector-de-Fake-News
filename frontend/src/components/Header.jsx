@@ -7,16 +7,16 @@ export default function Header() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
 
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 text-slate-100">
-              <ShieldCheck className="h-7 w-7" />
+            <div className="flex items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 p-1">
+              <img src="/logo.png" alt="Logo" className="h-12 w-12 object-contain rounded-md" />
             </div>
 
             <div>
               <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-50">
                 Detector de Fake News
               </h1>
-              <p className="mt-1 text-sm text-slate-400">
-                Painel forense para análise de credibilidade jornalística
+              <p className="mt-1 text-sm text-slate-400 max-w-xl">
+                Painel forense para análise de credibilidade jornalística — foco em rastreabilidade e evidência.
               </p>
             </div>
           </div>
