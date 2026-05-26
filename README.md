@@ -13,6 +13,9 @@ START.bat
 ```bash
 bash START.sh
 ```
+URL DO FRONT-END: 
+
+URL DO BACK-END: 
 
 Isso iniciará automaticamente:
 - **Frontend**: http://localhost:5173 🎨
@@ -27,7 +30,6 @@ Isso iniciará automaticamente:
 - **npm** ou **yarn** (gerenciador de pacotes)
 
 ---
-
 ## 📁 Estrutura do Projeto
 
 ```
@@ -42,10 +44,10 @@ Isso iniciará automaticamente:
 
 ---
 
-## 🎯 Recursos
+## 🎯 recursos
 
 ✨ **Interface Avançada**
-- Dashboard analítico com glassmorphism
+- dashboard analítico com glassmorphism
 - Tema escuro profissional
 - Animações suaves
 
