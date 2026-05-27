@@ -1,4 +1,4 @@
-export default function MetricsBar({ label, value, color = 'blue' }) {
+export default function MetricsBar({ label, value = 0, color = 'blue' }) {
   const colorMap = {
     blue: { bg: 'bg-slate-400', light: 'bg-slate-800' },
     purple: { bg: 'bg-zinc-400', light: 'bg-zinc-800' },
@@ -8,7 +8,7 @@ export default function MetricsBar({ label, value, color = 'blue' }) {
   };
 
   const { bg, light } = colorMap[color] || colorMap.blue;
-  const percentage = Math.round(value * 100);
+  const percentage = Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
 
   return (
     <div className="space-y-2 group">

@@ -15,6 +15,13 @@ const normalizeAnalysisResponse = (data) => {
     throw new Error('Resposta inválida do servidor');
   }
 
+  const metrics = {
+    atualizacao: Number(data.metrics?.atualizacao ?? 0),
+    clareza: Number(data.metrics?.clareza ?? 0),
+    precisao: Number(data.metrics?.precisao ?? 0),
+    confiabilidade: Number(data.metrics?.confiabilidade ?? 0),
+  };
+
   const suspiciousSpans = Array.isArray(data.suspicious_spans)
     ? data.suspicious_spans
         .map((item) => ({
@@ -27,6 +34,7 @@ const normalizeAnalysisResponse = (data) => {
   return {
     classification: data.classification,
     confidence: data.confidence,
+    metrics,
     indicators: data.indicators || [],
     suspiciousSpans,
     confidenceRaw: data.confidence_raw ?? null,

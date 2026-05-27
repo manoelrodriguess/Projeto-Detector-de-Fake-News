@@ -13,6 +13,12 @@ Você deve responder exclusivamente no formato JSON abaixo:
 {
   "classification": "true" ou "fake",
   "confidence": <float entre 0.0 e 1.0>,
+  "metrics": {
+    "atualizacao": <int entre 0 e 100 baseado no frescor da notícia>,
+    "clareza": <int entre 0 e 100 baseado na estrutura do texto>,
+    "precisao": <int entre 0 e 100 baseado em fatos reais/fontes>,
+    "confiabilidade": <int entre 0 e 100 como nota ponderada geral>
+  },
   "indicators": ["lista de strings curtas explicando os sinais encontrados"],
   "suspicious_spans": [
     {

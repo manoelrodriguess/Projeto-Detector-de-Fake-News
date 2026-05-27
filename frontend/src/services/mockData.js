@@ -15,6 +15,12 @@ export const mockExamples = {
     result: {
       classification: "true",
       confidence: 0.89,
+      metrics: {
+        atualizacao: 92,
+        clareza: 87,
+        precisao: 95,
+        confiabilidade: 89,
+      },
       indicators: [
         "Organismos de saúde confiáveis citados (OMS)",
         "Informações baseadas em estudos científicos",
@@ -31,6 +37,12 @@ export const mockExamples = {
     result: {
       classification: "fake",
       confidence: 0.94,
+      metrics: {
+        atualizacao: 45,
+        clareza: 62,
+        precisao: 38,
+        confiabilidade: 51,
+      },
       indicators: [
         "Múltiplos pontos de exclamação (sensacionalismo extremo)",
         "Apelo emocional e urgência artificiais",
@@ -48,6 +60,12 @@ export const mockExamples = {
     result: {
       classification: "fake",
       confidence: 0.48,
+      metrics: {
+        atualizacao: 55,
+        clareza: 58,
+        precisao: 44,
+        confiabilidade: 49,
+      },
       indicators: [
         "Linguagem equilibrada mas vaga",
         "Falta de dados específicos e quantificáveis",
@@ -145,17 +163,17 @@ export const mockAnalyzeNews = async (text) => {
 export const generateMockMetrics = (isTrue) => {
   if (isTrue) {
     return {
-      timeliness: 0.92,
-      clarity: 0.87,
-      accuracy: 0.95,
-      reliability: 0.89,
+      atualizacao: 92,
+      clareza: 87,
+      precisao: 95,
+      confiabilidade: 89,
     };
   }
   return {
-    timeliness: 0.45,
-    clarity: 0.62,
-    accuracy: 0.38,
-    reliability: 0.51,
+    atualizacao: 45,
+    clareza: 62,
+    precisao: 38,
+    confiabilidade: 51,
   };
 };
 

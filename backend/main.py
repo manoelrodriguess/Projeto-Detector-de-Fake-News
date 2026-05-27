@@ -4,6 +4,7 @@ import json
 import os
 import random
 import base64
+import re
 from mimetypes import guess_type
 from io import BytesIO
 from pathlib import Path
@@ -72,9 +73,17 @@ class NoticiaInput(BaseModel):
     text: str = Field(..., min_length=1, description="Texto da notícia enviado pelo frontend")
 
 
+class MetricsResposta(BaseModel):
+    atualizacao: int = Field(..., ge=0, le=100)
+    clareza: int = Field(..., ge=0, le=100)
+    precisao: int = Field(..., ge=0, le=100)
+    confiabilidade: int = Field(..., ge=0, le=100)
+
+
 class AnaliseResposta(BaseModel):
     classification: str
     confidence: float
+    metrics: MetricsResposta
     indicators: list[str]
     suspicious_spans: list[dict[str, str]] = Field(default_factory=list)
     confidence_raw: float | None = None
@@ -156,19 +165,28 @@ def _build_groq_client() -> Groq:
 
 
 def _extract_json_content(raw_content: str, expected_keys: set[str] | None = None) -> dict[str, Any]:
-    try:
-        parsed = json.loads(raw_content)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"A resposta da Groq não veio em JSON válido: {exc}") from exc
+    cleaned = clean_and_parse_json(raw_content)
 
-    if not isinstance(parsed, dict):
+    if not isinstance(cleaned, dict):
         raise ValueError("A resposta da Groq precisa ser um objeto JSON.")
 
-    if expected_keys is not None and set(parsed.keys()) != expected_keys:
+    if expected_keys is not None and set(cleaned.keys()) != expected_keys:
         expected = ", ".join(sorted(expected_keys))
         raise ValueError(f"A resposta da Groq precisa conter exatamente as chaves: {expected}.")
 
-    return parsed
+    return cleaned
+
+
+def clean_and_parse_json(raw_content: str) -> Any:
+    cleaned = raw_content.strip()
+
+    fence_pattern = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE | re.DOTALL)
+    cleaned = fence_pattern.sub("", cleaned).strip()
+
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"A resposta da Groq não veio em JSON válido: {exc}") from exc
 
 
 def _normalize_suspicious_spans(spans: Any) -> list[dict[str, str]]:
@@ -194,6 +212,27 @@ def _normalize_suspicious_spans(spans: Any) -> list[dict[str, str]]:
         )
 
     return normalized
+
+
+def _validate_metrics(metrics: Any) -> MetricsResposta:
+    if not isinstance(metrics, dict):
+        raise ValueError('Campo "metrics" precisa ser um objeto JSON.')
+
+    required_keys = {"atualizacao", "clareza", "precisao", "confiabilidade"}
+    if set(metrics.keys()) != required_keys:
+        expected = ", ".join(sorted(required_keys))
+        raise ValueError(f'Campo "metrics" precisa conter exatamente: {expected}.')
+
+    validated: dict[str, int] = {}
+    for key in required_keys:
+        value = metrics.get(key)
+        if not isinstance(value, int):
+            raise ValueError(f'Campo "metrics.{key}" precisa ser um inteiro.')
+        if value < 0 or value > 100:
+            raise ValueError(f'Campo "metrics.{key}" precisa estar entre 0 e 100.')
+        validated[key] = value
+
+    return MetricsResposta(**validated)
 
 
 def _compute_dataset_similarity_scores(text: str, samples: int = 40) -> tuple[float, float]:
@@ -312,7 +351,7 @@ def _analyze_image_with_groq(file_bytes: bytes, mime_type: str) -> tuple[Analise
             )
 
             raw_content = response.choices[0].message.content or "{}"
-            parsed = _extract_json_content(raw_content, {"classification", "confidence", "indicators", "suspicious_spans"})
+            parsed = _extract_json_content(raw_content, {"classification", "confidence", "metrics", "indicators", "suspicious_spans"})
 
             classification = str(parsed.get("classification", "")).strip().lower()
             if classification not in {"true", "fake"}:
@@ -326,6 +365,8 @@ def _analyze_image_with_groq(file_bytes: bytes, mime_type: str) -> tuple[Analise
             if not isinstance(indicators, list) or not all(isinstance(item, str) for item in indicators):
                 raise ValueError('Campo "indicators" precisa ser uma lista de strings.')
 
+            metrics = _validate_metrics(parsed.get("metrics"))
+
             suspicious_spans = _normalize_suspicious_spans(parsed.get("suspicious_spans", []))
             extracted_text = ""
 
@@ -334,6 +375,7 @@ def _analyze_image_with_groq(file_bytes: bytes, mime_type: str) -> tuple[Analise
                     classification=classification,
                     confidence=confidence,
                     confidence_raw=confidence,
+                    metrics=metrics,
                     indicators=indicators,
                     suspicious_spans=suspicious_spans,
                 ),
@@ -501,7 +543,7 @@ def _analyze_text(text: str) -> AnaliseResposta:
         )
 
         raw_content = response.choices[0].message.content or "{}"
-        parsed = _extract_json_content(raw_content, {"classification", "confidence", "indicators", "suspicious_spans"})
+        parsed = _extract_json_content(raw_content, {"classification", "confidence", "metrics", "indicators", "suspicious_spans"})
 
         classification = str(parsed.get("classification", "")).strip().lower()
         if classification not in {"true", "fake"}:
@@ -514,6 +556,8 @@ def _analyze_text(text: str) -> AnaliseResposta:
         indicators = parsed.get("indicators", [])
         if not isinstance(indicators, list) or not all(isinstance(item, str) for item in indicators):
             raise ValueError('Campo "indicators" precisa ser uma lista de strings.')
+
+        metrics = _validate_metrics(parsed.get("metrics"))
 
         suspicious_spans = _normalize_suspicious_spans(parsed.get("suspicious_spans", []))
 
@@ -545,6 +589,7 @@ def _analyze_text(text: str) -> AnaliseResposta:
             classification=classification,
             confidence=adjusted_confidence,
             confidence_raw=confidence,
+            metrics=metrics,
             indicators=indicators,
             suspicious_spans=suspicious_spans,
         )

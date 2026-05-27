@@ -9,12 +9,11 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
   const confidence = Math.round(result.confidence * 100);
   const suspiciousSpans = result.suspiciousSpans || [];
   const confidenceRaw = typeof result.confidenceRaw === 'number' ? Math.round(result.confidenceRaw * 100) : null;
-
   const metrics = {
-    timeliness: isTrue ? 0.92 : 0.45,      // Atualização
-    clarity: isTrue ? 0.87 : 0.62,         // Clareza
-    accuracy: isTrue ? 0.95 : 0.38,        // Precisão
-    reliability: isTrue ? 0.89 : 0.51,     // Confiabilidade
+    atualizacao: Number(result.metrics?.atualizacao ?? 0),
+    clareza: Number(result.metrics?.clareza ?? 0),
+    precisao: Number(result.metrics?.precisao ?? 0),
+    confiabilidade: Number(result.metrics?.confiabilidade ?? 0),
   };
 
   return (
@@ -105,22 +104,22 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <MetricsBar
               label="Atualização"
-              value={metrics.timeliness}
+              value={metrics.atualizacao}
               color={isTrue ? 'green' : 'red'}
             />
             <MetricsBar
               label="Clareza"
-              value={metrics.clarity}
+              value={metrics.clareza}
               color={isTrue ? 'cyan' : 'yellow'}
             />
             <MetricsBar
               label="Precisão"
-              value={metrics.accuracy}
+              value={metrics.precisao}
               color={isTrue ? 'green' : 'red'}
             />
             <MetricsBar
               label="Confiabilidade"
-              value={metrics.reliability}
+              value={metrics.confiabilidade}
               color={isTrue ? 'cyan' : 'purple'}
             />
           </div>
@@ -201,7 +200,7 @@ export default function AnalysisResult({ result, originalText, onAnalyzeAnother 
         
         <button
           onClick={() => {
-            const report = `RELATÓRIO DE ANÁLISE\n\nClassificação: ${isTrue ? 'Verdadeiro' : 'Falso'}\nConfiança: ${confidence}%\n\nMétricas:\n- Atualização: ${Math.round(metrics.timeliness * 100)}%\n- Clareza: ${Math.round(metrics.clarity * 100)}%\n- Precisão: ${Math.round(metrics.accuracy * 100)}%\n- Confiabilidade: ${Math.round(metrics.reliability * 100)}%`;
+            const report = `RELATÓRIO DE ANÁLISE\n\nClassificação: ${isTrue ? 'Verdadeiro' : 'Falso'}\nConfiança: ${confidence}%\n\nMétricas:\n- Atualização: ${metrics.atualizacao}%\n- Clareza: ${metrics.clareza}%\n- Precisão: ${metrics.precisao}%\n- Confiabilidade: ${metrics.confiabilidade}%`;
             navigator.clipboard.writeText(report);
             alert('Relatório copiado para a área de transferência!');
           }}
