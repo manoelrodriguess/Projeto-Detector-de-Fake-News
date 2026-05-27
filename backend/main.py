@@ -20,6 +20,11 @@ from PIL import Image
 from pypdf import PdfReader
 from pydantic import BaseModel, Field
 
+try:
+    from src.prompts import ANALYSIS_PROMPT
+except ModuleNotFoundError:
+    from backend.src.prompts import ANALYSIS_PROMPT
+
 BASE_DIR = Path(__file__).resolve().parent
 
 load_dotenv(BASE_DIR / ".env")
@@ -150,7 +155,7 @@ def _build_groq_client() -> Groq:
     return Groq(api_key=GROQ_API_KEY)
 
 
-def _extract_json_content(raw_content: str) -> dict[str, Any]:
+def _extract_json_content(raw_content: str, expected_keys: set[str] | None = None) -> dict[str, Any]:
     try:
         parsed = json.loads(raw_content)
     except json.JSONDecodeError as exc:
@@ -158,6 +163,10 @@ def _extract_json_content(raw_content: str) -> dict[str, Any]:
 
     if not isinstance(parsed, dict):
         raise ValueError("A resposta da Groq precisa ser um objeto JSON.")
+
+    if expected_keys is not None and set(parsed.keys()) != expected_keys:
+        expected = ", ".join(sorted(expected_keys))
+        raise ValueError(f"A resposta da Groq precisa conter exatamente as chaves: {expected}.")
 
     return parsed
 
@@ -274,17 +283,6 @@ def _analyze_image_with_groq(file_bytes: bytes, mime_type: str) -> tuple[Analise
 
     data_url = _image_bytes_to_data_url(file_bytes, mime_type)
 
-    prompt_system = (
-        "Você é um analisador de fake news. Leia o texto presente na imagem e responda SOMENTE com JSON válido e estrito, sem markdown, sem texto extra. "
-        'O JSON deve conter exatamente: classification ("true" ou "fake"), confidence (número de 0.0 a 1.0), '
-        "indicators (lista de strings com os motivos) e suspicious_spans (lista de objetos com excerpt e reason). "
-        "Inclua também extracted_text com o texto literal lido da imagem. "
-        "Os suspicious_spans devem apontar trechos literais do texto da imagem que parecem falsos, imprecisos, manipulados ou sem suporte. "
-        "Se a notícia for verdadeira, suspicious_spans pode ser uma lista vazia. "
-        "Cada excerpt deve ser copiado exatamente como aparece no texto lido da imagem, sem mudar palavras. "
-        "Se houver texto ilegível, informe isso nos indicators."
-    )
-
     prompt_user = (
         "Analise a imagem abaixo e retorne apenas o JSON solicitado. "
         "Leia o conteúdo textual da imagem com atenção e classifique a notícia."
@@ -300,7 +298,7 @@ def _analyze_image_with_groq(file_bytes: bytes, mime_type: str) -> tuple[Analise
             response = app.state.groq_client.chat.completions.create(
                 model=model_name,
                 messages=[
-                    {"role": "system", "content": prompt_system},
+                    {"role": "system", "content": ANALYSIS_PROMPT},
                     {
                         "role": "user",
                         "content": [
@@ -314,7 +312,7 @@ def _analyze_image_with_groq(file_bytes: bytes, mime_type: str) -> tuple[Analise
             )
 
             raw_content = response.choices[0].message.content or "{}"
-            parsed = _extract_json_content(raw_content)
+            parsed = _extract_json_content(raw_content, {"classification", "confidence", "indicators", "suspicious_spans"})
 
             classification = str(parsed.get("classification", "")).strip().lower()
             if classification not in {"true", "fake"}:
@@ -329,7 +327,7 @@ def _analyze_image_with_groq(file_bytes: bytes, mime_type: str) -> tuple[Analise
                 raise ValueError('Campo "indicators" precisa ser uma lista de strings.')
 
             suspicious_spans = _normalize_suspicious_spans(parsed.get("suspicious_spans", []))
-            extracted_text = str(parsed.get("extracted_text", "")).strip()
+            extracted_text = ""
 
             return (
                 AnaliseResposta(
@@ -486,15 +484,6 @@ def _analyze_text(text: str) -> AnaliseResposta:
     if app.state.groq_client is None:
         raise HTTPException(status_code=500, detail="Cliente da Groq não inicializado.")
 
-    prompt_system = (
-        "Você é um analisador de fake news. Responda SOMENTE com JSON válido e estrito, sem markdown, sem texto extra. "
-        'O JSON deve conter exatamente: classification ("true" ou "fake"), confidence (número de 0.0 a 1.0), '
-        "indicators (lista de strings com os motivos) e suspicious_spans (lista de objetos com excerpt e reason). "
-        "Os suspicious_spans devem apontar trechos literais do texto original que parecem falsos, imprecisos, manipulados ou sem suporte. "
-        "Se a notícia for verdadeira, suspicious_spans pode ser uma lista vazia. "
-        "Cada excerpt deve ser copiado exatamente como aparece no texto, sem mudar palavras."
-    )
-
     prompt_user = (
         "Analise a notícia abaixo e retorne apenas o JSON solicitado.\n\n"
         f"NOTÍCIA:\n{text.strip()}"
@@ -504,7 +493,7 @@ def _analyze_text(text: str) -> AnaliseResposta:
         response = app.state.groq_client.chat.completions.create(
             model=GROQ_MODEL,
             messages=[
-                {"role": "system", "content": prompt_system},
+                {"role": "system", "content": ANALYSIS_PROMPT},
                 {"role": "user", "content": prompt_user},
             ],
             temperature=0.2,
@@ -512,7 +501,7 @@ def _analyze_text(text: str) -> AnaliseResposta:
         )
 
         raw_content = response.choices[0].message.content or "{}"
-        parsed = _extract_json_content(raw_content)
+        parsed = _extract_json_content(raw_content, {"classification", "confidence", "indicators", "suspicious_spans"})
 
         classification = str(parsed.get("classification", "")).strip().lower()
         if classification not in {"true", "fake"}:

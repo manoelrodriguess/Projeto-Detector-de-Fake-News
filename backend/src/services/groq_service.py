@@ -7,6 +7,11 @@ import httpx
 from src.core.settings import settings
 from src.utils.heuristics import analyze_with_heuristics
 
+try:
+    from src.prompts import ANALYSIS_PROMPT
+except ModuleNotFoundError:
+    from backend.src.prompts import ANALYSIS_PROMPT
+
 
 class GroqService:
     async def analyze(self, text: str, dataset_context: dict | None = None) -> dict | None:
@@ -29,28 +34,38 @@ class GroqService:
         try:
             parsed = json.loads(content)
         except json.JSONDecodeError:
-            return analyze_with_heuristics(text)
+            fallback = analyze_with_heuristics(text)
+            fallback.setdefault("suspicious_spans", [])
+            return fallback
+
+        expected_keys = {"classification", "confidence", "indicators", "suspicious_spans"}
+        if set(parsed.keys()) != expected_keys:
+            raise ValueError(f"A resposta da Groq precisa conter exatamente as chaves: {', '.join(sorted(expected_keys))}.")
+
+        classification = str(parsed.get("classification", "")).strip().lower()
+        if classification not in {"true", "fake"}:
+            raise ValueError('Campo "classification" precisa ser "true" ou "fake".')
+
+        confidence = float(parsed.get("confidence", 0.0))
+        if confidence < 0.0 or confidence > 1.0:
+            raise ValueError('Campo "confidence" precisa estar entre 0.0 e 1.0.')
+
+        indicators = parsed.get("indicators", [])
+        if not isinstance(indicators, list) or not all(isinstance(item, str) for item in indicators):
+            raise ValueError('Campo "indicators" precisa ser uma lista de strings.')
+
+        suspicious_spans = parsed.get("suspicious_spans", [])
+        if not isinstance(suspicious_spans, list):
+            raise ValueError('Campo "suspicious_spans" precisa ser uma lista.')
 
         return {
-            "classification": parsed.get("classification", "fake"),
-            "confidence": float(parsed.get("confidence", 0.5)),
-            "indicators": parsed.get("indicators", []),
+            "classification": classification,
+            "confidence": confidence,
+            "indicators": indicators,
+            "suspicious_spans": suspicious_spans,
         }
 
     def _build_payload(self, text: str, dataset_context: dict) -> dict:
-        system_prompt = (
-            "Você analisa notícias e retorna apenas JSON com classification, confidence e indicators. "
-            "classification deve ser true ou fake. confidence deve ser um número entre 0 e 1.\n"
-            "Regras obrigatórias de ceticismo (siga rigorosamente):\n"
-            "1) NÃO confie cegamente em formatação jornalística, templates de portais ou menções a veículos famosos (ex.: G1, CNN, Globo, BBC, Folha, UOL, Estadão) — essas são sinais a serem verificados, NÃO provas.\n"
-            "2) NÃO aceite citações genéricas de 'especialistas' como prova. Exija fontes verificáveis; se não houver fonte, trate como suspeito.\n"
-            "3) AVALIE a plausibilidade das alegações: notícias sobre alienígenas, OVNIs, Terra Plana, curas milagrosas, fenômenos sobrenaturais ou teorias da conspiração devem ter a confiabilidade drasticamente reduzida e, salvo evidência verificável explicitamente citada, classificar como fake.\n"
-            "REGRA DE UFOLOGIA E FENÔMENOS SOBRENATURAIS: Se o texto relatar o aparecimento, fotos inéditas, ou 'novas evidências' de alienígenas (ex: ET de Varginha), criaturas míticas ou eventos sobrenaturais simulando formatação de portais de notícias tradicionais (G1, UOL, etc.), CLASSIFIQUE IMEDIATAMENTE COMO FAKE. Portais jornalísticos reais não publicam 'novas imagens de ETs' como fatos ou mistérios reabertos sem um anúncio oficial da comunidade científica global. Trate a roupagem jornalística nesses temas específicos como uma tática deliberada de desinformação.\n"
-            "4) Se o texto imitar um portal, incluir cabeçalhos/timestamps ou copiar estilo jornalístico sem links verificáveis, considere isso um indicador de risco e reduza a confiança.\n"
-            "5) Sempre justifique a decisão no campo 'indicators' listando as evidências textuais (ex.: 'imita formato do G1', 'alegação extraordinária sem fonte', 'cita especialistas sem link').\n"
-            "6) Saída estrita: retorne somente JSON com as chaves 'classification' ('true' ou 'fake'), 'confidence' (float entre 0 e 1) e 'indicators' (lista de strings)."
-        )
-
         user_prompt = {
             "text": text,
             "dataset_context": dataset_context,
@@ -59,7 +74,7 @@ class GroqService:
         return {
             "model": settings.groq_model,
             "messages": [
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": ANALYSIS_PROMPT},
                 {"role": "user", "content": json.dumps(user_prompt, ensure_ascii=False)},
             ],
             "temperature": 0.2,
