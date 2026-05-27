@@ -13,9 +13,10 @@ START.bat
 ```bash
 bash START.sh
 ```
-URL DO FRONT-END: 
+## 🔗 Links de Produção
 
-URL DO BACK-END: 
+- Frontend (produção): https://projeto-detector-de-fake-news-89fyv6c9o.vercel.app/
+- Backend (produção): https://detector-fake-news-backend.onrender.com
 
 Isso iniciará automaticamente:
 - **Frontend**: http://localhost:5173 🎨
@@ -90,6 +91,20 @@ python main.py
 - `frontend/README.md` - Instruções específicas do frontend
 - `frontend/src/services/mockData.js` - Exemplos de dados e testes
 - `frontend/src/services/api.js` - Especificação da API
+- `Documentação/Docs` - Link para acervo com PDFs e materiais sobre implementação e gestão do projeto
+
+---
+
+## 🖼️ Fotos do Projeto
+
+### Chat
+![Página de chat](frontend/public/chat-pag-inicial.png)
+
+### Dashboard
+![Página de dashboard](frontend/public/dashboard-pag-2.png)
+
+### Notícia
+![Página de notícia](frontend/public/noticia-pag2.png)
 
 ---
 
@@ -138,9 +153,12 @@ python main.py       # Inicia servidor FastAPI
 ## 🌐 Endpoints da API
 
 ```
-POST /analyze
-├── Input:  { "text": "conteúdo" }
-└── Output: { "classification", "confidence", "indicators" }
+GET /api/noticia-aleatoria
+POST /api/analisar
+POST /api/analisar-arquivo
+
+Input principal:  { "text": "conteúdo" }
+Output principal: { "classification", "confidence", "metrics", "indicators", "suspicious_spans" }
 ```
 
 Documentação interativa: `http://localhost:8000/docs`
@@ -153,12 +171,13 @@ Documentação interativa: `http://localhost:8000/docs`
 - React 19
 - Vite 8
 - Tailwind CSS 4
-- Zero dependências externas
+- Lucide React
 
 **Backend**
 - FastAPI
 - Python 3.8+
-- Modelos de IA (a implementar)
+- Groq SDK
+- Pandas e Scikit-learn
 
 ---
 
